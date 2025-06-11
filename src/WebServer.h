@@ -11,6 +11,7 @@
 
 
 ESP8266WebServer server(80);
+ESP8266WebServer server2(80);
 MoistureSensor moistureSensor(analog_Pin,digitalPowerPinForSensor,700,200);
 int deviceCount = 1;
 DeviceData devices[maxDevices] = { { String(ESP.getChipId()), "Device Name",}};
