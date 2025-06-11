@@ -2,9 +2,10 @@
 #define WIFI_CONNECTION_H
 
 #include "ESP8266WiFi.h"
+#include ".secrets.h"
 
-const char *ssid = "PLAY_Swiatlowodowy_9999";
-const char *password = "HuxhCvy4W7";
+const char *ssid = YOUR_SSID;
+const char *password = YOUR_PASSWORD;
 
 void conectToWiFi(){
 
