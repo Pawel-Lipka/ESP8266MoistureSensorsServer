@@ -8,8 +8,9 @@
 #include "ESP8266WebServer.h" 
 #include "DeviceData.h"
 #include "MoistureSensor.h"
+#include "TimeServer.h"
 
-
+TimeServer timeServer("pool.ntp.org", 3600, 0);
 ESP8266WebServer server(80);
 MoistureSensor moistureSensor(analog_Pin,digitalPowerPinForSensor,700,200);
 int deviceCount = 1;
@@ -40,13 +41,13 @@ void handleData(){
     devices[deviceCount].name = "new sensor";
     devices[deviceCount].rawValue = rawValue;
     devices[deviceCount].percentValue = percentValue;
-    devices[deviceCount].lastUpdate = millis();
+    devices[deviceCount].lastUpdate = timeServer.currentTime();
     deviceCount++;
 
   } else if (idx >= 0) {
     devices[idx].rawValue = rawValue;
     devices[idx].percentValue = percentValue;
-    devices[idx].lastUpdate = millis();
+    devices[idx].lastUpdate = timeServer.currentTime();;
   }
 
   server.send(200, "text/plain", "OK");
@@ -64,7 +65,7 @@ void mainPage(){
 //devices[deviceCount].name = "new sensor";
   devices[0].rawValue = moistureSensor.readRaw();
   devices[0].percentValue = moistureSensor.getMoisturePercent();
-  devices[0].lastUpdate = 0;
+  devices[0].lastUpdate = timeServer.currentTime();
 
  
   moistureSensor.turnOffPower();
@@ -117,7 +118,7 @@ String html = R"rawliteral(
     <body>
       <h1>Moje kwiatki</h1>
       <table>
-        <tr><th>ID</th><th>Nazwa</th><th>Wilgotność (%)</th><th>Zmień Nazwę</th></tr>
+        <tr><th>ID</th><th>Nazwa</th><th>Wilgotność (%)</th><th>Aktualizacja</th><th>Zmień Nazwę</th></tr>
   )rawliteral";
 
 
@@ -125,6 +126,7 @@ String html = R"rawliteral(
     html += "<tr><td>" + devices[i].id + "</td>";
     html += "<td>" + String(devices[i].name) + "</td>";
     html += "<td>" + String(devices[i].percentValue) + "</td>";
+    html += "<td>" + devices[i].lastUpdate + "</td>";
     html += "<td><button id = " + String(i) + " type='button' onclick='changeName(\"" + String(i) + "\")'>Zmień Nazwę</button></td></tr>";
    
     

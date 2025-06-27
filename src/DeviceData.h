@@ -9,6 +9,6 @@ struct DeviceData
     String name;
     int rawValue;
     int percentValue;
-    unsigned long lastUpdate;
+    String lastUpdate;
 };
 #endif

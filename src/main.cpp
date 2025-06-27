@@ -12,6 +12,7 @@ void setup() {
   startMDNS();// LocalMDNS,h
   routing();// WebServer.h
   
+  
 }
 
 void loop() {
@@ -19,4 +20,5 @@ void loop() {
   MDNS.update();
   server.handleClient();
   delay(50); // lower power consumption
+
 }
