@@ -3,7 +3,7 @@
 
 #define maxDevices 20
 #define analog_Pin 0
-#define digitalPowerPinForSensor 4
+#define digitalPowerPinForSensor 15
 
 #include "ESP8266WebServer.h" 
 #include "DeviceData.h"
