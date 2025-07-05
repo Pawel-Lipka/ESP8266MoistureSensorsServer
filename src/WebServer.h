@@ -118,30 +118,43 @@ String html = R"rawliteral(
     <body>
       <h1>Moje kwiatki</h1>
       <table>
-        <tr><th>ID</th><th>Nazwa</th><th>Wilgotność (%)</th><th>Aktualizacja</th><th>Zmień Nazwę</th></tr>
+        <tr><th>ID</th><th>Nazwa</th><th>Wilgotność (%)</th><th>Aktualizacja</th><th>Zmień Nazwę</th><th>Usuń</th></tr>
   )rawliteral";
 
+    html += "<tr><td>" + devices[0].id + "</td>";
+    html += "<td>" + String(devices[0].name) + "</td>";
+    html += "<td>" + String(devices[0].percentValue) + "</td>";
+    html += "<td>" + devices[0].lastUpdate + "</td>";
+    html += "<td><button id = " + String(0) + " type='button' onclick='changeName(\"" + String(0) + "\")'>Zmień Nazwę</button></td></tr>";
 
-   for (int i = 0; i < deviceCount; ++i) {
+   for (int i = 1; i < deviceCount; ++i) {
     html += "<tr><td>" + devices[i].id + "</td>";
     html += "<td>" + String(devices[i].name) + "</td>";
     html += "<td>" + String(devices[i].percentValue) + "</td>";
     html += "<td>" + devices[i].lastUpdate + "</td>";
-    html += "<td><button id = " + String(i) + " type='button' onclick='changeName(\"" + String(i) + "\")'>Zmień Nazwę</button></td></tr>";
-   
-    
+    html += "<td><button id = " + String(i) + " type='button' onclick='changeName(\"" + String(i) + "\")'>Zmień Nazwę</button></td>";
+    html += "<td><button id = " + String(i) + " type='button' onclick='removeDevice(\"" + String(i) + "\")'>Usuń</button></td></tr>";
   }
 
   html += R"rawliteral(</table><footer>Pozdrawiam Asiunie</footer>)rawliteral";
 
 
   html += R"rawliteral(
-      <script> function changeName(id) {
-      var newName = prompt("Podaj nową nazwę:"); 
-        if (newName !== null && newName.trim() !== "") {
-          window.location.href = "/setName?id=" + encodeURIComponent(id) + "&name=" + encodeURIComponent(newName);
+      <script> 
+        function changeName(id) {
+          var newName = prompt("Podaj nową nazwę:"); 
+          if (newName !== null && newName.trim() !== "") {
+            window.location.href = "/setName?id=" + encodeURIComponent(id) + "&name=" + encodeURIComponent(newName);
+          }
         }
-    }</script>
+
+        function removeDevice(id) {
+          if (confirm("Czy na pewno chcesz usunąć ten wpis?")) {
+            window.location.href = "/deleteDevice?id=" + encodeURIComponent(id);
+          }
+        }
+      </script>
+   
     </body>
     </html>
   )rawliteral";
@@ -164,12 +177,25 @@ void setName() {
   server.send(303);
 }
 
+void deleteDevice(){
+  int id = server.arg("id").toInt();
+  
+  for (int i = id; i < deviceCount; i++ ){
+    devices[i] = devices[i + 1];
+  }
+  deviceCount --;
+
+  server.sendHeader("Location", "/");
+  server.send(303);
+}
+
 void routing(){
 
   server.on("/", mainPage);
   server.on("/data", handleData);
   server.on("/setName", setName);
   server.onNotFound(handleNotFound);
+  server.on("/deleteDevice", deleteDevice);
   server.begin();
 }
 #endif
